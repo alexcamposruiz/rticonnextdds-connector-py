@@ -81,7 +81,7 @@ class TestDataflow:
     """
     # take any pre-existing samples from cache
     rtiInputFixture.take()
-    rtiOutputFixture.instance.setDictionary(testMsg)
+    rtiOutputFixture.instance.set_dictionary(testMsg)
     rtiOutputFixture.write()
     wait=request.param.get('wait')
     method=request.param.get('method')
@@ -96,7 +96,7 @@ class TestDataflow:
           time.sleep(.5)
           retrieve_func= getattr(rtiInputFixture,method)
           retrieve_func()
-          if rtiInputFixture.samples.getLength() > 0:
+          if rtiInputFixture.samples.length > 0:
             break
 
   def test_samples_getLength(self,rtiInputFixture):
@@ -165,56 +165,11 @@ class TestDataflow:
       and z == testMsg['z'] and color == testMsg['color'] \
       and shapesize == testMsg['shapesize']
 
-  @pytest.mark.xfail
-  def test_getNumber_for_nonexistent_field(self,rtiInputFixture,testMsg):
-    """
-    This function tests that an ``AttributeError`` is raised when a non-existent field
-    is accessed with :func:`rticonnextdds_connector.Samples.getNumber`
-
-    :param rtiInputFixture: :func:`conftest.rtiInputFixture`
-    :type rtiInputFixture: `pytest.fixture <https://pytest.org/latest/builtin.html#_pytest.python.fixture>`_
-    :param testMsg: :func:`testMsg`
-    :type testMsg: `pytest.fixture <https://pytest.org/latest/builtin.html#_pytest.python.fixture>`_
-
-    .. note: This test is marked to fail as this case is not handled yet.
-    """
-    with pytest.raises(AttributeError) as execinfo:
-      x = rtiInputFixture.samples.getNumber(0,"invalid_field")
-    print("\nException of type:"+str(execinfo.type)+\
-      "\nvalue:"+str(execinfo.value))
-
-  @pytest.mark.xfail(sys.version_info < (3,0), reason="for python >= 3, fromcstring raises AttributeError when decode is called on NoneType returned by rtin_RTIDDSConnector_getStringFromSamples on nonexistent field")
-  def test_getString_for_nonexistent_field(self,rtiInputFixture,testMsg):
-    """
-    This function tests that an ``AttributeError`` is raised when a non-existent field
-    is accessed with :func:`rticonnextdds_connector.Samples.getString`
-
-    :param rtiInputFixture: :func:`conftest.rtiInputFixture`
-    :type rtiInputFixture: `pytest.fixture <https://pytest.org/latest/builtin.html#_pytest.python.fixture>`_
-    :param testMsg: :func:`testMsg`
-    :type testMsg: `pytest.fixture <https://pytest.org/latest/builtin.html#_pytest.python.fixture>`_
-
-    .. note: This test is marked to fail as this case is not handled yet.
-    """
-    with pytest.raises(AttributeError) as execinfo:
-      x = rtiInputFixture.samples.getString(0,"invalid_field")
-    print("\nException of type:"+str(execinfo.type)+\
-      "\nvalue:"+str(execinfo.value))
-
-  @pytest.mark.xfail
-  def test_getBoolean_for_nonexistent_field(self,rtiInputFixture,testMsg):
-    """
-    This function tests that an ``AttributeError`` is raised when a non-existent field
-    is accessed with :func:`rticonnextdds_connector.Samples.getBoolean`
-
-    :param rtiInputFixture: :func:`conftest.rtiInputFixture`
-    :type rtiInputFixture: `pytest.fixture <https://pytest.org/latest/builtin.html#_pytest.python.fixture>`_
-    :param testMsg: :func:`testMsg`
-    :type testMsg: `pytest.fixture <https://pytest.org/latest/builtin.html#_pytest.python.fixture>`_
-
-    .. note: This test is marked to fail as this case is not handled yet.
-    """
-    with pytest.raises(AttributeError) as execinfo:
-      x = rtiInputFixture.samples.getBoolean(0,"invalid_field")
-    print("\nException of type:"+str(execinfo.type)+\
-      "\nvalue:"+str(execinfo.value))
+    x = rtiInputFixture.samples[0].get_number("x")
+    y = rtiInputFixture.samples[0].get_number("y")
+    z = rtiInputFixture.samples[0].get_boolean("z")
+    color  = rtiInputFixture.samples[0].get_string("color")
+    shapesize = rtiInputFixture.samples[0].get_number("shapesize")
+    assert x == testMsg['x'] and y == testMsg['y'] \
+      and z == testMsg['z'] and color == testMsg['color'] \
+      and shapesize == testMsg['shapesize']
